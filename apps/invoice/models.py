@@ -1,3 +1,7 @@
+import decimal
+
+from datetime import timedelta
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -30,6 +34,7 @@ class Invoice(models.Model):
     is_credit_for = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
     is_sent = models.BooleanField(default=False)
     is_paid = models.BooleanField(default=False)
+    bankaccount = models.CharField(max_length=266, blank=True, null=True)
     gross_amount = models.DecimalField(max_digits=6, decimal_places=2)
     vat_amount = models.DecimalField(max_digits=6, decimal_places=2)
     net_amount = models.DecimalField(max_digits=6, decimal_places=2)
@@ -43,6 +48,9 @@ class Invoice(models.Model):
 
     class Meta:
         ordering = ('-created_at',)
+    
+    def get_due_date(self):
+        return self.created_at + timedelta(days=self.due_days)
 
 class Item(models.Model):
     invoice = models.ForeignKey(Invoice, related_name='items', on_delete=models.CASCADE)
@@ -52,3 +60,7 @@ class Item(models.Model):
     net_amount = models.DecimalField(max_digits=6, decimal_places=2)
     vat_rate = models.IntegerField(default=0)
     discount = models.IntegerField(default=0)
+
+    def get_gross_amount(self):
+        vat_rate = decimal.Decimal(self.vat_rate/100)
+        return self.net_amount + (self.net_amount * vat_rate)
