@@ -161,8 +161,10 @@
             <div class="top-left">
                 <div class="invoicely">
                     <h3>{{ team.name }}</h3>
-                    <p>Street name 123</p>
-                    <p>12345 City</p>
+                    <p>{{ team.address }}</p>
+                    {% if team.zipcode or team.place %}
+                        <p>{{ team.zipcode }} {{ team.place }}</p>
+                    {% endif %}
                 </div>
 
                 <div class="client">
@@ -183,7 +185,7 @@
 
                 <div class="split">
                     <div class="split-left">Email</div>
-                    <div class="split-right">invoice@yourteam.com</div>
+                    <div class="split-right">{{ team.email }}</div>
                 </div>
 
                 <div class="split">
