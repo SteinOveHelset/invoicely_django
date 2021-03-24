@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Credit note</title>
+
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            html, body {
+                width: 100%;
+                height: 100%;
+                font-family: Arial;
+            }
+
+            body {
+                padding: 30px;
+            }
+
+            .top {
+                font-size: 0;
+            }
+
+                .top-left {
+                    width: 50%;
+                    font-size: 16px;
+                    display: inline-block;
+                    vertical-align: top;
+                }
+
+                    .top-left .client {
+                        margin-top: 40px;
+                        margin-left: 40px;
+                    }
+
+                .top-right {
+                    width: 50%;
+                    font-size: 16px;
+                    display: inline-block;
+                    vertical-align: top;
+                }
+
+                    .top-right h2 {
+                        margin-bottom: 20px;
+                    }
+
+                    .top-right .split {
+                        font-size: 0;
+                    }
+
+                        .top-right .split .split-left,
+                        .top-right .split .split-right {
+                            width: 40%;
+                            display: inline-block;
+                            vertical-align: top;
+                            font-size: 16px;
+                        }
+
+                        .top-right .split .split-right {
+                            width: 60%;
+                        }
+
+            .items {
+                margin-top: 50px;
+            }
+
+                .items .items-row {
+                    font-size: 0;
+                }
+
+                    .items .items-row .items-row-cell {
+                        padding: 6px 14px;
+                        display: inline-block;
+                        vertical-align: top;
+                        font-size: 14px;
+                        border-bottom: 1px solid #f1f1f1;
+                    }
+
+                    .items .items-row .items-row-cell.header {
+                        padding: 14px 14px;
+                        font-weight: bold;
+                        background: #f1f1f1;
+                    }
+
+                    .items .items-row .title {
+                        width: 20%;
+                    }
+
+                    .items .items-row .quantity {
+                        width: 20%;
+                    }
+
+                    .items .items-row .unit-price {
+                        width: 20%;
+                    }
+
+                    .items .items-row .vat-rate {
+                        width: 20%;
+                    }
+
+                    .items .items-row .sum {
+                        width: 20%;
+                    }
+
+            .summary {
+                margin-top: 50px;
+                padding: 30px;
+                font-size: 0;
+                background: #f1f1f1;
+            }
+
+                .summary .summary-title {
+                    width: 100%;
+                    margin-bottom: 30px;
+                    font-size: 20px;
+                }
+
+                .summary .summary-left {
+                    width: 65%;
+                    display: inline-block;
+                    vertical-align: top;
+                    font-size: 16px;
+                }
+
+                    .summary .summary-left strong {
+                        width: 200px;
+                        display: inline-block;
+                    }
+
+                .summary .summary-right {
+                    width: 35%;
+                    display: inline-block;
+                    vertical-align: top;
+                    font-size: 16px;
+                }
+
+                    .summary .summary-right .split {
+                        font-size: 0;
+                    }
+
+                        .summary .summary-right .split .split-right,
+                        .summary .summary-right .split .split-left {
+                            width: 50%;
+                            display: inline-block;
+                            vertical-align: top;
+                            font-size: 16px;
+                        }
+
+                        .summary .summary-right .split .split-right {
+                            text-align: right;
+                        }
+        </style>
+    </head>
+
+    <body>
+        <div class="top">
+            <div class="top-left">
+                <div class="invoicely">
+                    <h3>{{ team.name }}</h3>
+                    <p>{{ team.address }}</p>
+                    {% if team.zipcode or team.place %}
+                        <p>{{ team.zipcode }} {{ team.place }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="client">
+                    <p>{{ invoice.client_name }}</p>
+
+                    {% if invoice.client_address %}
+                        <p>{{ invoice.client_address }}</p>
+                    {% endif %}
+
+                    {% if invoice.client_zipcode or invoice.client_place %}
+                        <p>{{ invoice.client_zipcode }} {{ invoice.client_place }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="top-right">
+                <h2>Credit note {{ invoice.invoice_number }}</h2>
+
+                <div class="split">
+                    <div class="split-left">Email</div>
+                    <div class="split-right">{{ team.email }}</div>
+                </div>
+
+                <div class="split">
+                    <div class="split-left">Invoice date</div>
+                    <div class="split-right">{{ invoice.created_at|date:'d.m.Y' }}</div>
+                </div>
+
+                <div class="split">
+                    <div class="split-left">Credit note for</div>
+                    <div class="split-right">{{ invoice.is_invoice_for.invoice_number }}</div>
+                </div>
+
+                {% if invoice.sender_reference %}
+                    <div class="split">
+                        <div class="split-left">Our reference</div>
+                        <div class="split-right">{{ invoice.sender_reference }}</div>
+                    </div>
+                {% endif %}
+
+                {% if invoice.client_contact_reference %}
+                    <div class="split">
+                        <div class="split-left">Their reference</div>
+                        <div class="split-right">{{ invoice.client_contact_reference }}</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="items">
+            <div class="items-row">
+                <div class="items-row-cell header title">Title</div>
+
+                <div class="items-row-cell header quantity">Quantity</div>
+
+                <div class="items-row-cell header unit-price">Unit price</div>
+
+                <div class="items-row-cell header vat-rate">Vat rate</div>
+
+                <div class="items-row-cell header sum">Sum</div>
+
+                {% for item in invoice.items.all %}
+                    <div class="items-row">
+                        <div class="items-row-cell title">{{ item.title }}</div>
+
+                        <div class="items-row-cell quantity">-{{ item.quantity }}</div>
+
+                        <div class="items-row-cell unit-price">{{ item.unit_price }}</div>
+
+                        <div class="items-row-cell vat-rate">{{ item.vat_rate }}%</div>
+
+                        <div class="items-row-cell sum">-{{ item.get_gross_amount }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="summary">
+            <div class="summary-title">
+                <h2>Summary</h2>
+            </div>
+
+            <div class="summary-left">
+                <p><strong>Invoice number: </strong>{{ invoice.invoice_number }}</p>
+            </div>
+
+            <div class="summary-right">
+                <div class="split">
+                    <div class="split-left">Net amount</div>
+                    <div class="split-right">-{{ invoice.net_amount }}</div>
+                </div>
+
+                <div class="split">
+                    <div class="split-left">Vat amount</div>
+                    <div class="split-right">-{{ invoice.vat_amount }}</div>
+                </div>
+
+                <div class="split">
+                    <div class="split-left"><strong>Credit</strong></div>
+                    <div class="split-right"><strong>-{{ invoice.gross_amount }}</strong></div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
